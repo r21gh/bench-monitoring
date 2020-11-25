@@ -9,7 +9,9 @@ import (
 	"strconv"
 	"os"
 	"time"
+	"expvar"
 )
+
 
 // Monitor struct consists of monitoring items
 /*
@@ -34,6 +36,9 @@ type Monitor struct {
 
 // NewMonitor : This function is responsible for creating a new monitoring 
 func NewMonitor(wg *sync.WaitGroup, duration int) {
+
+	var goroutines = expvar.NewInt("num_goroutine")
+
 	defer wg.Done()
 	var m Monitor
 	var rtm runtime.MemStats 
@@ -47,6 +52,7 @@ func NewMonitor(wg *sync.WaitGroup, duration int) {
 
 		// Number of goroutines
 		m.NumGoroutine = runtime.NumGoroutine()
+		goroutines.Set(int64(m.NumGoroutine))
 
 		// Misc memory stats
 		m.Alloc = rtm.Alloc
